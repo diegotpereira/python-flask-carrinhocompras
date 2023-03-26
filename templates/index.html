@@ -29,13 +29,13 @@
                     {% for key, val in session['carrinho_item'].items() %}
                         {% set quantidade = session['carrinho_item']['quantidade'] %}
                         {% set preco = session['carrinho_item']['preco'] %}
-                        {% set preco_item = session['carrinho_item']['preco_total'] %}
+                        {% set preco_item = session['carrinho_item'][key]['preco_total'] %}
                     <tr>
                         <td><img src="/static/{{ session['carrinho_item'][key]['imagem'] }}" alt="">{{ session['carrinho_item'][key]['nome']}}</td>
                         <td>{{ session['carrinho_item'][key]['codigo']}}</td>
-                        <td style="text-align: right;">{{ quantidade }}</td>
-                        <td style="text-align: right;">{{ preco }}</td>
-                        <td style="text-align: right;">{{ preco_item }}</td>
+                        <td style="text-align: right;">{{ session['carrinho_item'][key]['quantidade']}}</td>
+                        <td style="text-align: right;">{{ session['carrinho_item'][key]['preco'] | currency }}</td>
+                        <td style="text-align: right;">{{ preco_item | currency }}</td>
                         <td style="text-align: center;">
                             <a href="" class="botao-remover">
                                 <img src="/static/product-images/icon-delete.png" alt="remover item">
@@ -45,8 +45,8 @@
                     </tr>
                     <tr>
                         <td>Total: </td>
-                        <td>Quantidade total: </td>
-                        <td>Preço total: </td>
+                        <td>{{ session['toda_quantidade_total'] }} </td>
+                        <td>{{ session['todo_preco_total'] | currency }} </td>
                         <td></td>
                     </tr>
                 </tbody>

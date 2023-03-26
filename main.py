@@ -1,6 +1,5 @@
-import babel
 from app import app
-from flask import flash, session, render_template, request, redirect, url_for
+from flask import session, render_template, request, redirect, url_for
 from conexao import ConectarPostgresql
 from decimal import Decimal
 from babel.numbers import format_currency
@@ -8,10 +7,10 @@ from decimal import Decimal
 from babel.numbers import format_currency
 import locale
 
-
 @app.route('/')
 def produtos():
 
+    # session.clear()
     con = ConectarPostgresql()
     con.iniciar_conexao()
 
@@ -85,8 +84,13 @@ def adiciona_produto_no_carrinho():
                     # atualiza a quantidade e o preço total do produto no carrinho
                     velha_quantidade = session['carrinho_item'][_codigo]['quantidade']
                     quantidade_total = velha_quantidade + _quantidade
+                    # session['carrinho_item'][_codigo]['quantidade'] = quantidade_total
+                    # session['carrinho_item'][_codigo]['preco_total'] = quantidade_total * row[4]
+                    # session['carrinho_item'][key]['quantidade'] = quantidade_total
                     session['carrinho_item'][_codigo]['quantidade'] = quantidade_total
-                    session['carrinho_item'][_codigo]['preco_total'] = quantidade_total * row[2]
+                    # session['carrinho_item'][key]['preco_total'] = quantidade_total * row[4]
+                    session['carrinho_item'][_codigo]['preco_total'] = quantidade_total * preco
+
 
                 else:
                     # adiciona o item ao carrinho
