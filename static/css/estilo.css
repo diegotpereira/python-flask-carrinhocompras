@@ -28,6 +28,17 @@ body {
     overflow: auto;
 }
 
+#btnVazio {
+    background-color: #ffffff;
+    border: #d00000 1px solid;
+    padding: 5px 10px;
+    color: #d00000;
+    float: right;
+    text-decoration: none;
+    border-radius: 3px;
+    margin: 10px 0px;
+}
+
 .botao-adicionar {
     padding: 5px 10px;
     margin-left: 5px;
@@ -71,6 +82,10 @@ body {
 
 .produto-preco {
     float: left;
+}
+
+.carrinho-acao {
+    float: right;
 }
 
 .produto-quantidade {
