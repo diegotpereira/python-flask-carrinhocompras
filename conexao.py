@@ -1,6 +1,7 @@
 import psycopg2
 
 class ConectarPostgresql:
+    
     def __init__(self, bancoNome = 'tabelas_python', usuario = 'postgres', senha = '123', host = 'localhost', port = 5432):
         self.bancoNome = bancoNome
         self.usuario = usuario
