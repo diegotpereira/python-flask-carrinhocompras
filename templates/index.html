@@ -37,7 +37,7 @@
                         <td style="text-align: right;">{{ session['carrinho_item'][key]['preco'] | currency }}</td>
                         <td style="text-align: right;">{{ preco_item | currency }}</td>
                         <td style="text-align: center;">
-                            <a href="" class="botao-remover">
+                            <a href="{{ url_for('deleta_produto_no_carrinho', codigo=session['carrinho_item'][key]['codigo'])}}" class="botao-remover">
                                 <img src="/static/product-images/icon-delete.png" alt="remover item">
                             </a>
                         </td>

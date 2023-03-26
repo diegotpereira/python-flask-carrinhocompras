@@ -1,3 +1,4 @@
+import decimal
 from app import app
 from flask import session, render_template, request, redirect, url_for
 from conexao import ConectarPostgresql
@@ -6,6 +7,7 @@ from babel.numbers import format_currency
 from decimal import Decimal
 from babel.numbers import format_currency
 import locale
+from decimal import Decimal
 
 @app.route('/')
 def produtos():
@@ -35,15 +37,19 @@ def produtos():
 
     return render_template('index.html', produtos=rows)
 
+# @app.template_filter('currency')
+# def currency(value):
+#     value_decimal = Decimal(str(value))
+#     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+#     return format_currency(value_decimal, 'BRL', locale='pt_BR')
+
 @app.template_filter('currency')
-def currency(value):
-    value_decimal = Decimal(str(value))
-    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-    return format_currency(value_decimal, 'BRL', locale='pt_BR')
-
-
-
-
+def currency_filter(value):
+    try:
+        value_decimal = Decimal(str(value))
+        return f'R${value_decimal:.2f}'
+    except (ValueError, TypeError, decimal.InvalidOperation):
+        return value
 
 @app.route('/add', methods=['POST'])
 def adiciona_produto_no_carrinho():
@@ -156,6 +162,80 @@ def fusao_matriz(primeiro_array, segundo_array):
     # Se os argumentos não são do mesmo tipo, retorna False
     return False
 
+# @app.route('/deleta/<string:codigo>')
+# def deleta_produto_no_carrinho(codigo):
+#     try:
+#         todos_precos_totais = 0
+#         toda_quantidade_total = 0
+
+#         if 'carrinho_item' in session:
+#             carrinho = session['carrinho_item'].copy()  # cria uma cópia do dicionário original
+#             for key, value in carrinho.items():  # itera sobre a cópia em vez do original
+#                 if value['codigo'] == codigo:
+#                     quantidade_individual = int(value['quantidade'])
+#                     preco_individual = float(value['preco_total'])
+#                     toda_quantidade_total += quantidade_individual
+#                     todos_precos_totais += preco_individual
+#                     del session['carrinho_item'][key]
+
+#         if toda_quantidade_total == 0:
+#             session.clear()
+#         else:
+#             session['toda_quantidade_total'] = toda_quantidade_total
+#             session['todos_precos_totais'] = todos_precos_totais
+
+#         return redirect(url_for('.produtos'))
+#     except Exception as e:
+#         print(e)
+#         return 'Erro ao deletar produto'
+
+
+@app.route('/deleta/<string:codigo>')
+def deleta_produto_no_carrinho(codigo):
+
+    try:
+        todo_preco_total = 0
+        toda_quantidade_total = 0
+
+        for item in session['carrinho_item'].items():
+
+            if item[0] == codigo:
+
+                session['carrinho_item'].pop(item[0], None)
+
+                if 'carrinho_item' in session:
+
+                    for key, value in session['carrinho_item'].items():
+
+                        quantidade_individual = int(session['carrinho_item'][key]['quantidade'])
+                        preco_individual = float(session['carrinho_item'][key]['preco_total'])
+
+                        toda_quantidade_total += quantidade_individual
+                        todo_preco_total += preco_individual
+
+                break 
+
+        if toda_quantidade_total == 0:
+            
+            session.clear()
+
+        else:
+
+            session['toda_quantidade_total'] = toda_quantidade_total
+            session['todo_preco_total'] = todo_preco_total
+
+        return redirect(url_for('.produtos'))
+    
+    except Exception as e:
+
+        print(e)
+
+
+    return 'Produto deletado com sucesso!'
+
+
+
+# incialização
 if __name__ == "__main__":
     app.debug = True
     app.run()
