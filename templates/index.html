@@ -4,9 +4,76 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <!-- <link href="{{ url_for('static', filename='css/estilo.css') }}" rel="stylesheet" type="text/css" /> -->
+    <link rel="stylesheet" href="../static/css/estilo.css">
+    <title>Loja Online</title>
 </head>
 <body>
-    <h1>Carrinho de compras</h1>
+    <div>
+
+    </div>
+    <div id="carrinho-compras">
+        <div class="texto-cabecalho">Carrinho de compras1</div>
+        {% if 'carrinho_item' in session %}
+            <a href="">Carrinho Vazio</a>
+            <table class="tbl-carrinho" cellpadding="10" cellspacing="1">
+                <tbody>
+                    <tr>
+                        <th style="text-align: left;">Nome</th>
+                        <th style="text-align: left;">Código</th>
+                        <th style="text-align: right;" width="5%">Quantidade</th>
+                        <th style="text-align: right;" width="10%">Preço unitário</th>
+                        <th style="text-align: right;" width="10%">Preço</th>
+                        <th style="text-align: center;" width="5%">Remover</th>
+                    </tr>
+                    {% for key, val in session['carrinho_item'].items() %}
+                        {% set quantidade = session['carrinho_item']['quantidade'] %}
+                        {% set preco = session['carrinho_item']['preco'] %}
+                        {% set preco_item = session['carrinho_item']['preco_total'] %}
+                    <tr>
+                        <td><img src="/static/{{ session['carrinho_item'][key]['imagem'] }}" alt="">{{ session['carrinho_item'][key]['nome']}}</td>
+                        <td>{{ session['carrinho_item'][key]['codigo']}}</td>
+                        <td style="text-align: right;">{{ quantidade }}</td>
+                        <td style="text-align: right;">{{ preco }}</td>
+                        <td style="text-align: right;">{{ preco_item }}</td>
+                        <td style="text-align: center;">
+                            <a href="" class="botao-remover">
+                                <img src="/static/product-images/icon-delete.png" alt="remover item">
+                            </a>
+                        </td>
+                    {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Total: </td>
+                        <td>Quantidade total: </td>
+                        <td>Preço total: </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            {% else: %}
+
+                <div class="sem-registros">Seu carrinho está vazio.</div>
+            {% endif %}
+    </div>
+    <div id="produto-grade">
+        <div class="texto-cabecalho">Produtos</div>
+        {% for produto in produtos %}
+            <div class="produto-item">
+                <form method="post" action="/add">
+                    <div class="produto-imagem"><img src="/static/{{produto[3]}}" alt=""></div>
+                        <div class="produto-titulo-footer">
+                            <div class="produto-titulo">{{ produto[1] }} </div>
+                            <div class="produto-preco">{{ produto[4] | currency }}</div>
+                            <div class="carrinho-acao">
+                                <input type="hidden" name="codigo" value="{{ produto[2] }}"  />
+                                <input type="text" name="quantidade" id="" class="produto-quantidade" value="1" size="2">
+                                <input type="submit" value="Comprar" class="botao-adicionar">
+                            </div>
+                        </div>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
 </body>
 </html>
