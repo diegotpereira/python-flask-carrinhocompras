@@ -12,7 +12,6 @@ from decimal import Decimal
 @app.route('/')
 def produtos():
 
-    # session.clear()
     con = ConectarPostgresql()
     con.iniciar_conexao()
 
@@ -20,28 +19,10 @@ def produtos():
     cursor.execute("SELECT * FROM produto")
 
     rows = cursor.fetchall()
-
-    print(rows) 
-
-    # cursor = con.cursor()
-    # consulta = "SELECT * FROM produto"
-    # con.execute_consulta(consulta)
-
-    # rows = cursor.fetchall()
-
-    # produtos = []
-    # if con.cursor.rowcount > 0:
-    #     produtos = con.cursor.fetchall()
         
     con.fechar_conexao()
 
     return render_template('index.html', produtos=rows)
-
-# @app.template_filter('currency')
-# def currency(value):
-#     value_decimal = Decimal(str(value))
-#     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-#     return format_currency(value_decimal, 'BRL', locale='pt_BR')
 
 @app.template_filter('currency')
 def currency_filter(value):
@@ -90,13 +71,8 @@ def adiciona_produto_no_carrinho():
                     # atualiza a quantidade e o preço total do produto no carrinho
                     velha_quantidade = session['carrinho_item'][_codigo]['quantidade']
                     quantidade_total = velha_quantidade + _quantidade
-                    # session['carrinho_item'][_codigo]['quantidade'] = quantidade_total
-                    # session['carrinho_item'][_codigo]['preco_total'] = quantidade_total * row[4]
-                    # session['carrinho_item'][key]['quantidade'] = quantidade_total
                     session['carrinho_item'][_codigo]['quantidade'] = quantidade_total
-                    # session['carrinho_item'][key]['preco_total'] = quantidade_total * row[4]
                     session['carrinho_item'][_codigo]['preco_total'] = quantidade_total * preco
-
 
                 else:
                     # adiciona o item ao carrinho
@@ -162,65 +138,48 @@ def fusao_matriz(primeiro_array, segundo_array):
     # Se os argumentos não são do mesmo tipo, retorna False
     return False
 
-# @app.route('/deleta/<string:codigo>')
-# def deleta_produto_no_carrinho(codigo):
-#     try:
-#         todos_precos_totais = 0
-#         toda_quantidade_total = 0
-
-#         if 'carrinho_item' in session:
-#             carrinho = session['carrinho_item'].copy()  # cria uma cópia do dicionário original
-#             for key, value in carrinho.items():  # itera sobre a cópia em vez do original
-#                 if value['codigo'] == codigo:
-#                     quantidade_individual = int(value['quantidade'])
-#                     preco_individual = float(value['preco_total'])
-#                     toda_quantidade_total += quantidade_individual
-#                     todos_precos_totais += preco_individual
-#                     del session['carrinho_item'][key]
-
-#         if toda_quantidade_total == 0:
-#             session.clear()
-#         else:
-#             session['toda_quantidade_total'] = toda_quantidade_total
-#             session['todos_precos_totais'] = todos_precos_totais
-
-#         return redirect(url_for('.produtos'))
-#     except Exception as e:
-#         print(e)
-#         return 'Erro ao deletar produto'
-
-
 @app.route('/deleta/<string:codigo>')
 def deleta_produto_no_carrinho(codigo):
 
     try:
+        # Inicia a variável que irá armazenar o preço total de todos os produtos no carrinho
         todo_preco_total = 0
+        # Inicia a variável que irá armazenar a quantidade total de todos os produtos no carrinho
         toda_quantidade_total = 0
 
+        # Percorre todos os itens no carrinho e verifica se o código do produto a ser deletado existe
         for item in session['carrinho_item'].items():
 
             if item[0] == codigo:
 
+                # Remove o item com o código especificado do carrinho
                 session['carrinho_item'].pop(item[0], None)
 
+                # Verifica se ainda existem itens no carrinho
                 if 'carrinho_item' in session:
 
+                    # Percorre todos os itens no carrinho novamente para calcular a quantidade total e o preço total
                     for key, value in session['carrinho_item'].items():
 
+                        # Obtém a quantidade e o preço total do produto atual
                         quantidade_individual = int(session['carrinho_item'][key]['quantidade'])
                         preco_individual = float(session['carrinho_item'][key]['preco_total'])
 
+                        # Adiciona a quantidade e o preço total do produto atual às variáveis de quantidade e preço total
                         toda_quantidade_total += quantidade_individual
                         todo_preco_total += preco_individual
 
+                # Sai do loop de itens no carrinho
                 break 
 
+        # Verifica se a quantidade total de itens no carrinho é zero
         if toda_quantidade_total == 0:
-            
+
+            # Limpa a sessão do carrinho, pois não há mais itens nele
             session.clear()
 
         else:
-
+            # Atualiza as variáveis de quantidade total e preço total na sessão
             session['toda_quantidade_total'] = toda_quantidade_total
             session['todo_preco_total'] = todo_preco_total
 
@@ -228,9 +187,10 @@ def deleta_produto_no_carrinho(codigo):
     
     except Exception as e:
 
+        # Se ocorrer uma exceção, imprime a mensagem de erro no console
         print(e)
 
-
+    # Retorna uma mensagem de sucesso indicando que o produto foi excluído com sucesso
     return 'Produto deletado com sucesso!'
 
 
